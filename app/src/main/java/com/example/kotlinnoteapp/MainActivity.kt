@@ -17,8 +17,8 @@ import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var binding : ActivityMainBinding
-    lateinit var database : Note_Database
+    private lateinit var binding: ActivityMainBinding
+    lateinit var database: Note_Database
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,37 +30,41 @@ class MainActivity : AppCompatActivity() {
         database = Note_Database.getdatabase(this)
         val Array = ArrayList<Note_DataClass>()
 
+        val id = intent.getIntExtra("ID", -1)
+        val tit = intent.getStringExtra("title")
+
+        Log.d("priya", "intent" + id)
+        Log.d("priya", "" + tit)
+
 
         val resultLauncher =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-                result ->
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
 
-                if (result.resultCode== RESULT_OK){
-                    val data = result.data
-                    if (data!= null) {
-                        Log.d("priya", "not null")
-//                        var id = data?.getStringExtra("id")
-//
-//                        var title = data?.getStringExtra("title")
-//                        var content = data?.getStringExtra("content")
-                    }else{
-                        Log.d("priya", "null")
-                    }
 
+                if (result.resultCode == RESULT_OK) {
+                    val data: Intent? = result.data
+
+                    val ids = data?.getIntExtra("id", -1)
+                    var title = data?.getStringExtra("title")
+                    var content = data?.getStringExtra("content")
+
+
+                    Log.d("priya", "register" + ids)
 
                 }
 
 
-                 if (result.resultCode == 1) {
 
-                     val data = result.data
+                if (result.resultCode == 1) {
+
+                    val data = result.data
 
                     var title = data?.getStringExtra("title")
                     var content = data?.getStringExtra("content")
 
                     if (title != null && content != null) {
                         val note = Note_DataClass(
-                          title = title,
+                            title = title,
                             content = content
                         )
 
@@ -69,8 +73,7 @@ class MainActivity : AppCompatActivity() {
                         }
 
 
-                    }
-                    else if (title!= null ) {
+                    } else if (title != null) {
                         val note = Note_DataClass(
                             title = title
                         )
@@ -78,8 +81,7 @@ class MainActivity : AppCompatActivity() {
                         GlobalScope.launch {
                             database.notedao().insert(note)
                         }
-                    }
-                    else if( content != null){
+                    } else if (content != null) {
                         val note = Note_DataClass(
                             content = content
                         )
@@ -90,10 +92,7 @@ class MainActivity : AppCompatActivity() {
                     }
 
 
-
                 }
-
-
 
 
             }
@@ -111,26 +110,24 @@ class MainActivity : AppCompatActivity() {
         val noteadapter = Note_Adapter(this, Array)
         binding.recyclerview.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
-            adapter=noteadapter
+            adapter = noteadapter
         }
 
 
-        database.notedao().getreadablenote().observe(this){ notelist: List<Note_DataClass> ->
+        database.notedao().getreadablenote()
+            .observe(this) { notelist: List<Note_DataClass> ->
 
-            Array.clear()
-            Array.addAll(notelist)
-            noteadapter.notifyItemChanged(notelist.size)
-        }
-
-
-
-
+                Array.clear()
+                Array.addAll(notelist)
+                noteadapter.notifyItemChanged(notelist.size)
+            }
 
 
     }
 
 
 }
+
 
 
 

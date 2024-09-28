@@ -2,9 +2,9 @@ package com.example.kotlinnoteapp
 
 import android.content.Context
 import android.content.Intent
-import android.util.Log
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
-import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +12,7 @@ import android.widget.Button
 import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.view.menu.MenuView.ItemView
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -36,6 +36,46 @@ class Note_Adapter(
         val note = Notedatacalss[position]
         holder.notetitext.text = note.title
         holder.notetytext.text = note.content
+
+        holder.itemView.setOnLongClickListener{
+
+            val position = holder.adapterPosition
+
+            val dialogview = LayoutInflater.from(context).inflate(R.layout.dialog_box_delete,null)
+
+
+            val dialogB = AlertDialog.Builder(context)
+                dialogB.setView(dialogview)
+
+                dialogB.setCancelable(true)
+
+            val alert = dialogB.create()
+            alert.show()
+            alert.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+
+            val delete_btn = dialogview.findViewById<Button>(R.id.delete_btn)
+            val cancel_btn = dialogview.findViewById<Button>(R.id.cancel_btn)
+
+            delete_btn.setOnClickListener{
+
+                GlobalScope.launch {
+                    database.notedao().delete(note)
+                }
+                Notedatacalss.removeAt(position)
+                notifyItemRemoved(position)
+                notifyItemRangeChanged(position, Notedatacalss.size)
+                alert.dismiss()
+            }
+
+            cancel_btn.setOnClickListener{
+
+                alert.dismiss()
+            }
+            true
+
+
+        }
 
         holder.itemView.setOnClickListener{
 
