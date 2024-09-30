@@ -13,6 +13,7 @@ import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -42,8 +43,6 @@ class Note_Adapter(
             val position = holder.adapterPosition
 
             val dialogview = LayoutInflater.from(context).inflate(R.layout.dialog_box_delete,null)
-
-
             val dialogB = AlertDialog.Builder(context)
                 dialogB.setView(dialogview)
 

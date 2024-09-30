@@ -10,10 +10,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.kotlinnoteapp.databinding.ActivityMainBinding
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
 
@@ -30,26 +33,24 @@ class MainActivity : AppCompatActivity() {
         database = Note_Database.getdatabase(this)
         val Array = ArrayList<Note_DataClass>()
 
-        val id = intent.getIntExtra("ID", -1)
-        val tit = intent.getStringExtra("title")
-
-        Log.d("priya", "intent" + id)
-        Log.d("priya", "" + tit)
-
 
         val resultLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
 
 
+
                 if (result.resultCode == RESULT_OK) {
-                    val data: Intent? = result.data
+                    val data = result.data
+                    if (data == null){
+                        Toast.makeText(this, "hii", Toast.LENGTH_SHORT).show()
+                    }
 
                     val ids = data?.getIntExtra("id", -1)
                     var title = data?.getStringExtra("title")
                     var content = data?.getStringExtra("content")
 
 
-                    Log.d("priya", "register" + ids)
+                    Log.d("priya", "" + ids)
 
                 }
 
@@ -67,41 +68,44 @@ class MainActivity : AppCompatActivity() {
                             title = title,
                             content = content
                         )
-
-                        GlobalScope.launch {
+                            lifecycleScope.launch {
                             database.notedao().insert(note)
                         }
-
 
                     } else if (title != null) {
                         val note = Note_DataClass(
                             title = title
                         )
 
-                        GlobalScope.launch {
+                      lifecycleScope.launch {
+
                             database.notedao().insert(note)
+
                         }
+
                     } else if (content != null) {
                         val note = Note_DataClass(
                             content = content
                         )
 
-                        GlobalScope.launch {
+                        lifecycleScope.launch {
+
                             database.notedao().insert(note)
+
                         }
+
+
                     }
-
-
                 }
-
-
             }
+
+
 
 
 
         binding.addcontent.setOnClickListener {
 
-            Toast.makeText(this, "Write your heart out :)", Toast.LENGTH_SHORT)
+            Toast.makeText(this, "Write your heart out :)", Toast.LENGTH_SHORT).show()
             val intent = Intent(this, MainActivity2::class.java)
             resultLauncher.launch(intent)
 
@@ -113,20 +117,22 @@ class MainActivity : AppCompatActivity() {
             adapter = noteadapter
         }
 
+            database.notedao().getreadablenote()
+                .observe(this) { notelist: List<Note_DataClass> ->
+                    Array.clear()
+                    Array.addAll(notelist)
+                    noteadapter.notifyItemInserted(notelist.size)
+                }
+        }
 
-        database.notedao().getreadablenote()
-            .observe(this) { notelist: List<Note_DataClass> ->
 
-                Array.clear()
-                Array.addAll(notelist)
-                noteadapter.notifyItemChanged(notelist.size)
-            }
+
 
 
     }
 
 
-}
+
 
 
 

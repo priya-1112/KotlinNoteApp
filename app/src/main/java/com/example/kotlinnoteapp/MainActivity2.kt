@@ -8,6 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.room.RoomDatabase
 import com.example.kotlinnoteapp.databinding.ActivityMain2Binding
 import kotlinx.coroutines.GlobalScope
@@ -80,15 +81,6 @@ class MainActivity2 : AppCompatActivity() {
         }
 
 
-
-
-
-
-
-
-
-
-
         binding.savebutton.setOnClickListener {
 
             val title = binding.notetitle.text.toString()
@@ -103,17 +95,23 @@ class MainActivity2 : AppCompatActivity() {
             )
 
 
-            if (id != -1 && title.isNotEmpty() && content.isNotEmpty()) {
+            if (title.isNotEmpty() && content.isNotEmpty()) {
 
                 intent.putExtra("id", dataclass.id)
                 intent.putExtra("title", dataclass.title)
                 intent.putExtra("content", dataclass.content)
 
+                Log.d("IntentData", "ID: ${intent.getIntExtra("id", -1)}, Title: ${intent.getStringExtra("title")}, Content: ${intent.getStringExtra("content")}")
+
                 setResult(RESULT_OK, intent)
-                Toast.makeText(this, "Note Updated", Toast.LENGTH_SHORT).show()
+
+                lifecycleScope.launch {
+                    database.notedao().update(dataclass)
+                }
+
+                Toast.makeText(this, "Note Updated  ${dataclass.title}", Toast.LENGTH_SHORT).show()
                 finish()
 
-                startActivity(intent)
             } else if (id != -1 && title.isNotEmpty() && content.isEmpty()) {
 
 
@@ -141,7 +139,7 @@ class MainActivity2 : AppCompatActivity() {
                 Toast.makeText(this, "Note Updated", Toast.LENGTH_SHORT).show()
 
             }
-            else if (id == -1 && title.isEmpty() && content.isEmpty()) {
+             else if (id == -1  && title.isEmpty() && content.isEmpty()) {
 
                 Toast.makeText(this, "Nothing to save", Toast.LENGTH_SHORT).show()
 
