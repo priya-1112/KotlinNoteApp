@@ -35,6 +35,7 @@ class Note_Adapter(
     override fun onBindViewHolder(holder: Viewholder, position: Int) {
 
         val note = Notedatacalss[position]
+
         holder.notetitext.text = note.title
         holder.notetytext.text = note.content
 
@@ -43,6 +44,7 @@ class Note_Adapter(
             val position = holder.adapterPosition
 
             val dialogview = LayoutInflater.from(context).inflate(R.layout.dialog_box_delete,null)
+
             val dialogB = AlertDialog.Builder(context)
                 dialogB.setView(dialogview)
 
@@ -53,10 +55,10 @@ class Note_Adapter(
             alert.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
 
-            val delete_btn = dialogview.findViewById<Button>(R.id.delete_btn)
-            val cancel_btn = dialogview.findViewById<Button>(R.id.cancel_btn)
+            val deletebtn = dialogview.findViewById<Button>(R.id.delete_btn)
+            val cancelbtn = dialogview.findViewById<Button>(R.id.cancel_btn)
 
-            delete_btn.setOnClickListener{
+            deletebtn.setOnClickListener{
 
                 GlobalScope.launch {
                     database.notedao().delete(note)
@@ -67,7 +69,7 @@ class Note_Adapter(
                 alert.dismiss()
             }
 
-            cancel_btn.setOnClickListener{
+            cancelbtn.setOnClickListener{
 
                 alert.dismiss()
             }

@@ -12,19 +12,19 @@ import androidx.room.Update
 interface Note_Dao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert (note : Note_DataClass)
+   suspend fun insert (note : Note_DataClass)
 
     @Update
-    suspend fun update (note: Note_DataClass)
+   suspend fun update (note: Note_DataClass)
 
     @Delete
-    suspend fun delete (note: Note_DataClass)
+   suspend fun delete (note: Note_DataClass)
 
     @Query("SELECT * FROM Note_Table")
     fun getreadablenote (): LiveData<List<Note_DataClass>>
 
     @Query("SELECT * FROM Note_Table WHERE id =:Noteid")
-    fun getnotebyid (Noteid : Int): Note_DataClass?
+   suspend fun getnotebyid (Noteid : Int): Note_DataClass?
 
 
 }

@@ -29,75 +29,25 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
         database = Note_Database.getdatabase(this)
-        val Array = ArrayList<Note_DataClass>()
 
+        val Array = ArrayList<Note_DataClass>()
+        val noteadapter = Note_Adapter(this, Array)
 
         val resultLauncher =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                result ->
 
+                if (result.resultCode == 1){
 
-
-                if (result.resultCode == RESULT_OK) {
                     val data = result.data
-                    if (data == null){
-                        Toast.makeText(this, "hii", Toast.LENGTH_SHORT).show()
-                    }
+                    val id = data?.getIntExtra("id", -1)
 
-                    val ids = data?.getIntExtra("id", -1)
-                    var title = data?.getStringExtra("title")
-                    var content = data?.getStringExtra("content")
-
-
-                    Log.d("priya", "" + ids)
 
                 }
 
-
-
-                if (result.resultCode == 1) {
-
-                    val data = result.data
-
-                    var title = data?.getStringExtra("title")
-                    var content = data?.getStringExtra("content")
-
-                    if (title != null && content != null) {
-                        val note = Note_DataClass(
-                            title = title,
-                            content = content
-                        )
-                            lifecycleScope.launch {
-                            database.notedao().insert(note)
-                        }
-
-                    } else if (title != null) {
-                        val note = Note_DataClass(
-                            title = title
-                        )
-
-                      lifecycleScope.launch {
-
-                            database.notedao().insert(note)
-
-                        }
-
-                    } else if (content != null) {
-                        val note = Note_DataClass(
-                            content = content
-                        )
-
-                        lifecycleScope.launch {
-
-                            database.notedao().insert(note)
-
-                        }
-
-
-                    }
-                }
             }
+
 
 
 
@@ -111,7 +61,7 @@ class MainActivity : AppCompatActivity() {
 
         }
 
-        val noteadapter = Note_Adapter(this, Array)
+
         binding.recyclerview.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
             adapter = noteadapter
